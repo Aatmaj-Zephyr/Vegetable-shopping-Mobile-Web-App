@@ -10,25 +10,51 @@ function order(list, mode){
 function orderOnWhatsapp(list){
     console.log("Order on Whatsapp");
     var phoneNumber = getVendorNumber();
-    var message = "New order from " +getSelfDetails()+"\n"+ processListForWhatsapp(list);
+    var message = getSelfDetails()+"\n"+ processListForWhatsapp(list);
     var encodedMessage = encodeURIComponent(message);
     console.log(encodedMessage)
-    var whatsappUrl = "https://wa.me/" + phoneNumber + "?text=" + encodedMessage;
+    var whatsappUrl = "";
+    if(phoneNumber!=null){
+        whatsappUrl ="https://wa.me/" + phoneNumber + "?text=" + encodedMessage;
+    }
+    else{
+        var whatsappUrl = "https://wa.me/" + "?text=" + encodedMessage;
+    }
+    
     window.open(whatsappUrl);
 }
 
 function getSelfDetails(){
-    var name = "Aatmaj Mhatre";
-    var address="A-1104, Rameshwar,Neelkanth Heights"
-    return name+","+address;
+
+    var name = localStorage.getItem("name");
+    var address=localStorage.getItem("address");
+    if(name==null){
+        return address;
+    }
+    else{
+    return "New order from " + name+","+address;
+    }
+}
+
+function setSelfDetails(name, address){
+    //add the values to local storage
+    localStorage.setItem("name",name);
+    localStorage.setItem("address",address);
+
 }
 
 function getVendorNumber(){
-    var phoneNumber = "918879214633";
+    var phoneNumber = localStorage.getItem("vendorNumber");
     return phoneNumber;
 
 }
 
+function setVendorNumber(number){
+    //add the values to local storage
+    localStorage.setItem("vendorNumber",number);
+
+
+}
 function processListForWhatsapp(list){
     var message = "";
     message+="```";//for monospace
@@ -43,5 +69,8 @@ function processListForWhatsapp(list){
 function testDrive(){
     list = [{ itemName: "Carrot", "quantity": "1 kg" }, { itemName: "Broccoli", "quantity": "500 grams" }, { itemName: "Spinach", "quantity": "250 grams" }, { itemName: "Tomato", "quantity": "2 kg" }, { itemName: "Cucumber", "quantity": "3 pieces" }, { itemName: "Bell Pepper", "quantity": "3 pieces" }, { itemName: "Onion", "quantity": "1 kg" }];
     order(list, "whatsapp");
+    setSelfDetails("Rahul","Gurgaon");
+
+    setVendorNumber("918879214633");
 
 }
