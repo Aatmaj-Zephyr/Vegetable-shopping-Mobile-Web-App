@@ -1,13 +1,13 @@
 
-function order(list, mode){
+function order(list, mode,cartType){
     switch(mode){
         case "whatsapp":
-            orderOnWhatsapp(list);
+            orderOnWhatsapp(list,cartType);
         break;
     }
 }
 
-function orderOnWhatsapp(list){
+function orderOnWhatsapp(list,cartType){
     console.log("Order on Whatsapp");
     var phoneNumber = getVendorNumber();
     var message = getSelfDetails()+"\n"+ processListForWhatsapp(list);
@@ -44,15 +44,15 @@ function setSelfDetails(name, address){
 
 }
 
-function getVendorNumber(){
-    var phoneNumber = localStorage.getItem("vendorNumber");
+function getVendorNumber(cartType){
+    var phoneNumber = localStorage.getItem("vendorNumber"+cartType);
     return phoneNumber;
 
 }
 
-function setVendorNumber(number){
+function setVendorNumber(number,cartType){
     //add the values to local storage
-    localStorage.setItem("vendorNumber",number);
+    localStorage.setItem("vendorNumber"+cartType,number);
 
 
 }
@@ -70,7 +70,7 @@ function processListForWhatsapp(list){
 }
 function testDrive(){
     var list = '{ "items": [{ "itemName": "Carrot", "quantity": "1", "unit": "kg" }, { "itemName": "Broccoli", "quantity": "500", "unit": "grams" }, { "itemName": "Spinach", "quantity": "250", "unit": "grams" }, { "itemName": "Tomato", "quantity": "2", "unit": "kg" }, { "itemName": "Cucumber", "quantity": "3", "unit": "pieces" }, { "itemName": "Bell Pepper", "quantity": "3", "unit": "pieces" }, { "itemName": "Onion", "quantity": "1", "unit": "kg" }] }'
-        order(localStorage.getItem("vegetablecart"), "whatsapp");
+        order(localStorage.getItem("vegetablecart"), "whatsapp","vegetable");
    
 
 }
@@ -103,13 +103,23 @@ function makeItemList(cartType){
     document.getElementById("itemList").innerHTML=HTMLStringToBeAdded;
 }
 function getListItemHTML(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
-    var listitem="<div class='listItem'><div class='itemName'>"+itemName+"</div><div class='Qty'>"+itemQty+" "+itemUnit+"</div>"+getAddButton(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+"</div>";
+    var listitem="<div class='listItem'><div class='itemName'>"+itemName+"</div><div class='Qty'>"+itemQty+" "+itemUnit+"</div>"+getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+"</div>";
     return listitem;
 }
 
-function getAddButton(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
-    var button="<button onClick=addToCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Add</button>"
-    return button;
+function getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
+    var open="<div class='addRemove'>"
+    var addbutton="<button onClick=addToCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Add</button>"
+    var display="<div class='diaplay'>"+itemQty+"</div>";
+    var removebutton="<button onClick=removeFromCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Remove</button>"
+    var close="</div>";
+    if(itemQty==0){
+
+        return open+addbutton+close;
+    }
+    else{ //there is something to remove
+    return open+addbutton+display+removebutton+close;
+    }
 }
 
  
@@ -157,19 +167,80 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
      //testing
      console.log(localStorage.getItem(cartType+"cart"));
 
-
 }
+
+function removeFromCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
+    if(localStorage.getItem(cartType+"cart")==''){
+        //cart not initialized
+        localStorage.setItem(cartType+"cart",'{}'); // make empty
+    }
+    if(localStorage.getItem(cartType+"cart")=='{}'){ //please dont put  else if
+       //no change cant remove from empty
+    }
+    else{ 
+        oldCart=JSON.parse(localStorage.getItem(cartType+"cart"))["items"];
+        //if name already in oldCart, decrease qantity else do nothing
+
+        var isName=false;
+        for(var i=0;i<oldCart.length;i++){
+            if(oldCart[i].itemName==itemName){
+                oldCart[i].quantity=parseInt(oldCart[i].quantity)-parseInt(itemQty);
+                isName=true;
+                UpdateHTMLCart(itemName,oldCart[i].quantity,itemUnit,itemDefaultQty,cartType); //oldCart[i].quantity is present to get new value of the quantity
+                if(oldCart[i].quantity==0){
+                    removeHTMLCart(itemName); //remove element from the html display
+                    oldCart.splice(i, 1);
+                    //remove all
+                }
+            }
+        }
+        //if name not in oldCart, do nothing
+        if(isName==false){
+            //pass or alert user
+        }
+
+         //set cart as oldcart
+         localStorage.setItem(cartType+"cart",'{ "items": '+JSON.stringify(oldCart)+'}');
+    }
+}
+
 function addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     var prevCartHTML=document.getElementById('cart').innerHTML;
    
-    var element='<div class="listItem"><div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'+getAddButton(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+'</div></div>';
+    var element='<div class="listItem"><div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'+getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+'</div></div>';
     prevCartHTML+=element;
     console.log("Added " +itemName+" to html")
     document.getElementById('cart').innerHTML=prevCartHTML;
 
 }
 
+function removeHTMLCart(itemName,cartType){
+    // Find the parent container element
+var cartElement = document.getElementById('cart');
+
+// Find all the listItem elements within the parent container
+var listItems = cartElement.getElementsByClassName('listItem');
+
+// Iterate through the listItems
+for (var i = 0; i < listItems.length; i++) {
+  var listItem = listItems[i];
+
+  // Find the itemName element within the listItem
+  var itemNameElement = listItem.querySelector('.itemName');
+
+  // Check if the itemName matches 'Carrot'
+  if (itemNameElement.textContent === itemName) {
+    // Remove the listItem element
+    listItem.remove();
+    break; // Exit the loop after removing the first occurrence of 'Carrot'
+  }
+}
+
+
+}
+
 function UpdateHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
+    //add or subtract or whatever. just replace the html by what is provided in itemQty
     var prevCartHTML=document.getElementById('cart').innerHTML;
     //search in prevCartHTMl for itemname and replace its elements
     var element='<div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'; //not to alter button or itemDefaultQty
