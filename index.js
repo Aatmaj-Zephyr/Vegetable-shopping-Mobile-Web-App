@@ -114,6 +114,7 @@ function getAddButton(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
 
  
 function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
+    
     //itemQty is the amount item to be added.
    // itemDefaultQty is just for object 
     if(localStorage.getItem(cartType+"cart")==''){
@@ -124,6 +125,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         //cart empty
         //add item directly to cart without increasing qyantity
         var newItem={itemName:itemName,quantity:itemQty,unit:itemUnit,default:itemDefaultQty};
+
         localStorage.setItem(cartType+"cart",'{ "items": ['+JSON.stringify(newItem)+']}');
         UpdateHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType); 
     }
@@ -134,8 +136,9 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         var isName=false;
         for(var i=0;i<oldCart.length;i++){
             if(oldCart[i].itemName==itemName){
-                oldCart[i].quantity=parseInt(oldCart[i].quantity)+itemQty;
+                oldCart[i].quantity=parseInt(oldCart[i].quantity)+parseInt(itemQty);
                 isName=true;
+               
                 UpdateHTMLCart(itemName,oldCart[i].quantity,itemUnit,itemDefaultQty,cartType); //oldCart[i].quantity is present to get new value of the quantity
             }
         }
@@ -143,6 +146,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         if(isName==false){
             var newItem={itemName:itemName,quantity:itemQty,unit:itemUnit,default:itemDefaultQty};
             oldCart.push(newItem);
+           
             addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType); //
         }
 
@@ -157,7 +161,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
 }
 function addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     var prevCartHTML=document.getElementById('cart').innerHTML;
-
+   
     var element='<div class="listItem"><div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'+getAddButton(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+'</div></div>';
     prevCartHTML+=element;
     console.log("Added " +itemName+" to html")
@@ -168,7 +172,7 @@ function addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
 function UpdateHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     var prevCartHTML=document.getElementById('cart').innerHTML;
     //search in prevCartHTMl for itemname and replace its elements
-    var element='<div class="listItem"><div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'; //not to alter button or itemDefaultQty
+    var element='<div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'; //not to alter button or itemDefaultQty
     var exp=/\d+/ ;
     var itemNameRegex = new RegExp('<div class="itemName">' + itemName + '</div><div class="Qty">' + exp.source+ " " + itemUnit + "+</div>");
     //remove everything between index start and end (remove the old quantity element and name element)
