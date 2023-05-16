@@ -127,7 +127,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         var newItem={itemName:itemName,quantity:itemQty,unit:itemUnit,default:itemDefaultQty};
 
         localStorage.setItem(cartType+"cart",'{ "items": ['+JSON.stringify(newItem)+']}');
-        UpdateHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType); 
+        addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType); 
     }
     else{ //cart not empty 
         oldCart=JSON.parse(localStorage.getItem(cartType+"cart"))["items"];
