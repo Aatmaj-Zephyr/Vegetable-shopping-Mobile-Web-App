@@ -1,0 +1,7 @@
+Carrot,1,kg
+Broccoli,500,grams
+Spinach,250,grams
+Tomato,2,kg
+Cucumber,3,pieces
+BellPepper,3,pieces
+Onion,1,kg
