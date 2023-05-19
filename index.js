@@ -103,22 +103,22 @@ function makeItemList(cartType){
     document.getElementById("itemList").innerHTML=HTMLStringToBeAdded;
 }
 function getListItemHTML(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
-    var listitem="<div class='listItem'><div class='itemName'>"+itemName+"</div><div class='Qty'>"+itemQty+" "+itemUnit+"</div>"+getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+"</div>";
-    return listitem;
+    var listItem="<div class='listItem'><div class='itemName'>"+itemName+"</div><div class='Qty'>"+itemQty+" "+itemUnit+"</div>"+getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+"</div>";
+    return listItem;
 }
 
 function getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     var open="<div class='addRemove'>"
-    var addbutton="<button onClick=addToCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Add</button>"
-    var display="<div class='diaplay'>"+itemQty+"</div>";
-    var removebutton="<button onClick=removeFromCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Remove</button>"
+    var addButton="<button onClick=addToCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Add</button>"
+    var display="<div class='display'>"+itemQty+"</div>";
+    var removeButton="<button onClick=removeFromCart('"+itemName+"','"+itemDefaultQty+"','"+itemUnit+"','"+itemDefaultQty+"','"+cartType+"')> Remove</button>"
     var close="</div>";
     if(itemQty==0){
 
-        return open+addbutton+close;
+        return open+addButton+close;
     }
     else{ //there is something to remove
-    return open+addbutton+display+removebutton+close;
+    return open+addButton+display+removeButton+close;
     }
 }
 
@@ -131,9 +131,9 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         //cart not initialized
         localStorage.setItem(cartType+"cart",'{}'); // make empty
     }
-    if(localStorage.getItem(cartType+"cart")=='{}'){ //please dont put  else if
+    if(localStorage.getItem(cartType+"cart")=='{}'){ //please don'wt put  else if
         //cart empty
-        //add item directly to cart without increasing qyantity
+        //add item directly to cart without increasing quantity
         var newItem={itemName:itemName,quantity:itemQty,unit:itemUnit,default:itemDefaultQty};
 
         localStorage.setItem(cartType+"cart",'{ "items": ['+JSON.stringify(newItem)+']}');
@@ -141,7 +141,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     }
     else{ //cart not empty 
         oldCart=JSON.parse(localStorage.getItem(cartType+"cart"))["items"];
-        //if name already in oldCart, increase qyantity else add item
+        //if name already in oldCart, increase quantity else add item
 
         var isName=false;
         for(var i=0;i<oldCart.length;i++){
@@ -152,7 +152,7 @@ function addToCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
                 UpdateHTMLCart(itemName,oldCart[i].quantity,itemUnit,itemDefaultQty,cartType); //oldCart[i].quantity is present to get new value of the quantity
             }
         }
-        //if name not in oldCart, add item directly to cart without increasing qyantity
+        //if name not in oldCart, add item directly to cart without increasing quantity
         if(isName==false){
             var newItem={itemName:itemName,quantity:itemQty,unit:itemUnit,default:itemDefaultQty};
             oldCart.push(newItem);
@@ -174,12 +174,12 @@ function removeFromCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         //cart not initialized
         localStorage.setItem(cartType+"cart",'{}'); // make empty
     }
-    if(localStorage.getItem(cartType+"cart")=='{}'){ //please dont put  else if
+    if(localStorage.getItem(cartType+"cart")=='{}'){ //please don't put  else if
        //no change cant remove from empty
     }
     else{ 
         oldCart=JSON.parse(localStorage.getItem(cartType+"cart"))["items"];
-        //if name already in oldCart, decrease qantity else do nothing
+        //if name already in oldCart, decrease quantity else do nothing
 
         var isName=false;
         for(var i=0;i<oldCart.length;i++){
@@ -200,13 +200,13 @@ function removeFromCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
         }
 
          //set cart as oldcart
-         localStorage.setItem(cartType+"cart",'{ "items": '+JSON.stringify(oldCart)+'}');
+        localStorage.setItem(cartType+"cart",'{ "items": '+JSON.stringify(oldCart)+'}');
     }
 }
 
 function addHTMLCart(itemName,itemQty,itemUnit,itemDefaultQty,cartType){
     var prevCartHTML=document.getElementById('cart').innerHTML;
-   
+
     var element='<div class="listItem"><div class="itemName">'+itemName+'</div><div class="Qty">'+itemQty+' '+itemUnit+'</div>'+getButtons(itemName,itemQty,itemUnit,itemDefaultQty,cartType)+'</div></div>';
     prevCartHTML+=element;
     console.log("Added " +itemName+" to html")
@@ -274,9 +274,9 @@ function loadItemArray(cartType) {
   
     if (request.status >= 200 && request.status < 400) {
 
-      var itemlist = request.responseText.split("\n");
-      console.log(itemlist);
-      return itemlist;
+      var itemList = request.responseText.split("\n");
+      console.log(itemList);
+      return itemList;
 
     } else {
       console.error("Error fetching file of :" +cartType, request.statusText);
